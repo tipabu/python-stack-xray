@@ -42,7 +42,11 @@ gdb -p "$PID" -batch \
 	-eval-command='call (void)PyGILState_Release($1)'
 
 
-echo "Done; look in /tmp/all-stacktraces-$PID"
+gdbstatus=$?
+if [ $gdbstatus -eq 0 ]; then
+	echo "Done; look in /tmp/all-stacktraces-$PID"
+fi
+
 exit
 
 " """
