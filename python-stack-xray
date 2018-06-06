@@ -56,6 +56,23 @@ import gc, greenlet, os, traceback
 fname = "/tmp/all-stacktraces-{}".format(os.getpid())
 with open(fname, "w") as outfile:
     for ob in gc.get_objects():
-        if isinstance(ob, greenlet.greenlet) and ob.gr_frame:
-            outfile.write("============================== {:X} ==============================\n".format(id(ob)))
-            traceback.print_stack(ob.gr_frame, file=outfile)
+        if isinstance(ob, greenlet.greenlet):
+            outfile.write("============================== {:X} {} ==============================\n".format(
+                id(ob),
+                "[dead]" if ob.dead else
+                "[not started]" if not ob.gr_frame else
+                "[alive]"))
+
+            ancestry = []
+            gt = ob.parent
+            while gt:
+                ancestry.append(id(gt))
+                gt = gt.parent
+
+            if ancestry:
+                outfile.write("Ancestry: {}\n".format(" -> ".join("{:X}".format(a) for a in ancestry)))
+            else:
+                outfile.write("Ancestry: none (it's a root greenlet)\n")
+
+            if ob.gr_frame:
+                traceback.print_stack(ob.gr_frame, file=outfile)
