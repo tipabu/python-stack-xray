@@ -37,10 +37,12 @@ PID="$1"
 PYFILE=$(readlink -f "$0")
 
 gdb -p "$PID" -batch \
-	-eval-command='call PyGILState_Ensure()' \
-	-eval-command="call PyRun_SimpleString(\"execfile(\\\""$PYFILE"\\\")\")" \
-	-eval-command='call PyGILState_Release($1)'
+	-eval-command='call (PyGILState_STATE)PyGILState_Ensure()' \
+	-eval-command="call (int)PyRun_SimpleString(\"execfile(\\\""$PYFILE"\\\")\")" \
+	-eval-command='call (void)PyGILState_Release($1)'
 
+
+echo "Done; look in /tmp/all-stacktraces-$PID"
 exit
 
 " """
