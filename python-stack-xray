@@ -60,8 +60,10 @@ with open(fname, "w") as outfile:
             outfile.write("============================== {:X} {} ==============================\n".format(
                 id(ob),
                 "[dead]" if ob.dead else
-                "[not started]" if not ob.gr_frame else
-                "[alive]"))
+                "[not started: {:r}]".format(ob.run) if hasattr(ob, 'run') else
+                "[alive but no frames]" if bool(ob) and not ob.gr_frame else
+                "[alive]" if bool(ob) else
+                "[unknown]"))
 
             ancestry = []
             gt = ob.parent
