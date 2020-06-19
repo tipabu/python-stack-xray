@@ -38,7 +38,7 @@ PYFILE=$(readlink -f "$0")
 
 gdb -p "$PID" -batch \
 	-eval-command='call (PyGILState_STATE)PyGILState_Ensure()' \
-	-eval-command="call (int)PyRun_SimpleString(\"execfile(\\\""$PYFILE"\\\")\")" \
+	-eval-command="call (int)PyRun_SimpleString(\"exec(open(\\\""$PYFILE"\\\").read())\")" \
 	-eval-command='call (void)PyGILState_Release($1)'
 
 
