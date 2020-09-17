@@ -1,12 +1,12 @@
 #!/bin/bash
 #
-# Usage: python-stack-xray <pid>
-#
-# Makes an eventlet- or gevent-based Python process dump all its
-# stacks to /tmp/all-stacktraces-<pid>. This is mostly useful for
-# debugging.
-#
-# Requires gdb to be installed.
+## Usage: python-stack-xray <pid>
+##
+## Makes an eventlet- or gevent-based Python process dump all its
+## stacks to /tmp/all-stacktraces-<pid>. This is mostly useful for
+## debugging.
+##
+## Requires that gdb and python development files are installed.
 #
 #
 # Copyright (c) 2017 SwiftStack, Inc.
@@ -28,8 +28,8 @@
 
 set -e
 
-if [ -z "$1" ]; then
-	echo "Usage: $0 <pid>"
+if [ -z "$1" -o "$1" == "-h" -o "$1" == "--help" ]; then
+	< "$0" sed -e '/^##/!d;s/##\( \|\)//;'"s!python-stack-xray!$0!"
 	exit
 fi
 
