@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: python-stack-xray <pid>
+# Usage: python-stack-xray <pid> [<pid> ...]
 #
 # Makes an eventlet- or gevent-based Python process dump all its
 # stacks to /tmp/all-stacktraces-<pid>. This is mostly useful for
@@ -33,19 +33,20 @@ if [ -z "$1" ]; then
 	exit
 fi
 
-PID="$1"
 PYFILE=$(readlink -f "$0")
 
-gdb -p "$PID" -batch \
-	-eval-command='call (PyGILState_STATE)PyGILState_Ensure()' \
-	-eval-command="call (int)PyRun_SimpleString(\"exec(open(\\\""$PYFILE"\\\").read())\")" \
-	-eval-command='call (void)PyGILState_Release($1)'
+for PID in "$@"; do
+	gdb -p "$PID" -batch \
+		-eval-command='call (PyGILState_STATE)PyGILState_Ensure()' \
+		-eval-command="call (int)PyRun_SimpleString(\"exec(open(\\\""$PYFILE"\\\").read())\")" \
+		-eval-command='call (void)PyGILState_Release($1)'
 
 
-gdbstatus=$?
-if [ $gdbstatus -eq 0 ]; then
-	echo "Done; look in /tmp/all-stacktraces-$PID"
-fi
+	gdbstatus=$?
+	if [ $gdbstatus -eq 0 ]; then
+		echo "Done; look in /tmp/all-stacktraces-$PID"
+	fi
+done
 
 exit
 
