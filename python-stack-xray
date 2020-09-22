@@ -51,7 +51,7 @@ exit
 
 " """
 
-import gc, greenlet, os, traceback
+import gc, greenlet, os, sys, traceback
 
 fname = "/tmp/all-stacktraces-{}".format(os.getpid())
 with open(fname, "w") as outfile:
@@ -78,3 +78,8 @@ with open(fname, "w") as outfile:
 
             if ob.gr_frame:
                 traceback.print_stack(ob.gr_frame, file=outfile)
+
+    for thread_id, frame in sys._current_frames().items():
+        outfile.write("############################## {:X} ##############################\n".format(
+            thread_id))
+        traceback.print_stack(frame, file=outfile)
